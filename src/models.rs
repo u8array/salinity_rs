@@ -9,7 +9,6 @@ pub struct Assumptions {
     pub assume_borate: bool,
     pub default_f_mg_l: f64,
     pub ref_alk_dkh: Option<f64>,
-    #[allow(dead_code)]
     pub salinity_norm: f64,
     pub return_components: bool,
     pub borate_fraction: Option<f64>,
