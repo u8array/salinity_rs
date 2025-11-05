@@ -220,6 +220,21 @@ pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> Ca
     })
 }
 
+/// Compute practical salinity (SP) using TEOS-10 assumptions.
+///
+/// This is a thin wrapper that combines the provided `base_inp` with the
+/// given `Assumptions` (temperature/pressure and other normalized flags)
+/// and calls `calc_salinity_sp_iterative` to perform the actual mass-balance
+/// based iterative calculation.
+///
+/// Parameters:
+/// - `base_inp`: input concentrations and options (see `Inputs`).
+/// - `ass`: calculation `Assumptions` such as temperature and pressure.
+/// - `max_iter`: maximum number of iterations for the underlying solver.
+/// - `tol`: convergence tolerance applied to SP changes.
+///
+/// Returns a `CalcResult`, either `Simple(sp)` or `Detailed(...)` depending
+/// on the `Inputs` flags.
 pub fn calc_salinity_sp_teos10(
     base_inp: &Inputs,
     ass: &Assumptions,
@@ -230,12 +245,37 @@ pub fn calc_salinity_sp_teos10(
     calc_salinity_sp_iterative(&inp2, max_iter, tol)
 }
 
+/// Compute in-situ density (kg/m³) from Practical Salinity (SP).
+///
+/// The function converts `sp` to absolute salinity (SA) via `sa_from_sp`,
+/// computes conservative temperature from the provided `Assumptions` and then
+/// calls the TEOS-10 `rho` routine. Units:
+/// - `sp` is unitless (practical salinity)
+/// - `ass.temp` is °C, `ass.pressure_dbar` is in dbar
+/// - return value is density in kg/m³
+///
+/// This helper is convenient when callers only have SP and a set of
+/// environmental assumptions.
 pub fn rho_from_sp(sp: f64, ass: &Assumptions) -> f64 {
     let sa = sa_from_sp(sp);
     let ct = ct_from_t(sa, ass.temp, ass.pressure_dbar);
     rho(sa, ct, ass.pressure_dbar)
 }
 
+/// Compute the specific gravity of a seawater sample relative to pure water.
+///
+/// The specific gravity is defined here as the ratio rho(sw) / rho(pw) where
+/// `rho(sw)` is the density of seawater at the specified SP, temperature and
+/// pressure, and `rho(pw)` is the density of pure water at the same
+/// temperature and pressure. If the pure-water density routine returns zero
+/// (unexpected), the function conservatively returns `1.0`.
+///
+/// Parameters:
+/// - `sp`: practical salinity (unitless)
+/// - `t_ref`: reference temperature in °C
+/// - `p_ref`: reference pressure in dbar
+///
+/// Returns the dimensionless specific gravity (unitless).
 pub fn specific_gravity(sp: f64, t_ref: f64, p_ref: f64) -> f64 {
     let sa = sa_from_sp(sp);
     let ct_sw = ct_from_t(sa, t_ref, p_ref);
@@ -245,6 +285,18 @@ pub fn specific_gravity(sp: f64, t_ref: f64, p_ref: f64) -> f64 {
     if rho_pw == 0.0 { 1.0 } else { rho_sw / rho_pw }
 }
 
+/// Compute a compact `CalculationSummary` for the given inputs.
+///
+/// This convenience function runs the TEOS-10 based SP solver and returns a
+/// small summary useful for UI or API responses. The returned `CalculationSummary`
+/// contains both salinity (SP, SA), the in-situ density (kg/m³) and two
+/// reference specific gravities at 20°C and 25°C (both at 0 dbar).
+///
+/// Notes:
+/// - The function uses `calc_salinity_sp_teos10` with conservative defaults
+///   for iteration (30 iterations and 1e-8 tolerance).
+/// - All units follow the crate convention: density in kg/m³, SA in g/kg,
+///   and specific gravities are unitless ratios.
 pub fn compute_summary(inputs: &Inputs, assumptions: &Assumptions) -> CalculationSummary {
     let sp = match calc_salinity_sp_teos10(inputs, assumptions, 30, 1e-8) {
         CalcResult::Simple(v) => v,
