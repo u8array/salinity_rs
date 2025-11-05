@@ -30,7 +30,7 @@ pub struct DetailedResult {
 #[derive(Serialize, Debug, Clone)]
 pub struct CalculationSummary {
     pub sp: f64,
-    pub sa_g_per_kg: f64,
+    pub sa: f64,
     pub density_kg_per_m3: f64,
     pub sg_20_20: f64,
     pub sg_25_25: f64,
@@ -190,7 +190,7 @@ pub fn compute_summary(inputs: &Inputs, assumptions: &Assumptions) -> Calculatio
 
     CalculationSummary {
         sp,
-        sa_g_per_kg: sa,
+        sa,
         density_kg_per_m3: rho_val,
         sg_20_20: sg_20,
         sg_25_25: sg_25,

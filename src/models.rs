@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Assumptions {
     pub temp: f64,
     pub pressure_dbar: f64,
@@ -45,14 +46,24 @@ pub struct Inputs {
     pub f: Option<f64>,
     pub s: f64,
     pub b: f64,
+    /// Temperature in °C. Optional in input JSON; defaults to 20.0.
+    #[serde(default = "default_t_c")]
     pub t_c: f64,
+    /// Pressure in dbar. Optional in input JSON; defaults to 0.0.
+    #[serde(default = "default_p_dbar")]
     pub p_dbar: f64,
     pub alk_dkh: Option<f64>,
+    /// If true (default), a fraction of boron is treated as borate in the reference mix.
+    #[serde(default = "default_assume_borate")]
     pub assume_borate: bool,
+    /// Default fluoride concentration (mg/L) when `f` is not provided. Defaults to 1.296.
+    #[serde(default = "default_f_mg_l")]
     pub default_f_mg_l: f64,
     pub ref_alk_dkh: Option<f64>,
     pub borate_fraction: Option<f64>,
     pub alk_mg_per_meq: Option<f64>,
+    /// If true, include component tables in the result. Optional; defaults to false.
+    #[serde(default)]
     pub return_components: bool,
 }
 
@@ -95,4 +106,18 @@ impl Assumptions {
         }
         self
     }
+}
+
+// ---------- serde defaults for optional input fields below `b` ----------
+fn default_t_c() -> f64 {
+    20.0
+}
+fn default_p_dbar() -> f64 {
+    0.0
+}
+fn default_assume_borate() -> bool {
+    true
+}
+fn default_f_mg_l() -> f64 {
+    1.296
 }

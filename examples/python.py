@@ -33,30 +33,13 @@ def main():
             "cl": 19570.0,
             "f": 1.14,
             "s": 814.0,
-            "b": 5.57,
-            "t_c": 20.0,
-            "p_dbar": 0.0,
-            "alk_dkh": None,
-            "assume_borate": True,
-            "default_f_mg_l": 1.296,
-            "ref_alk_dkh": 8.0,
-            "borate_fraction": None,
-            "alk_mg_per_meq": None,
-            "return_components": False,
+            "b": 5.57
         }),
         "--assumptions-json",
         json.dumps({
             "temp": 20.0,
             "pressure_dbar": 0.0,
-            "alkalinity": 8.0,
-            "assume_borate": True,
-            "default_f_mg_l": 1.296,
-            "ref_alk_dkh": 8.0,
-            "salinity_norm": 35.0,
-            "return_components": False,
-            "borate_fraction": None,
-            "alk_mg_per_meq": None,
-            "rn_compat": False,
+            "alkalinity": 8.0
         }),
     ]
 
@@ -65,7 +48,7 @@ def main():
 
     required_keys = [
         "sp",
-        "sa_g_per_kg",
+        "sa",
         "density_kg_per_m3",
         "sg_20_20",
         "sg_25_25",

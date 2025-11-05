@@ -90,7 +90,7 @@ pub fn print_output(out: &CalculationOutput, args: &Args) -> Result<(), AppError
         println!("{}", s);
     } else {
         println!("SP: {:.4}", out.sp);
-        println!("SA: {:.4} g/kg", out.sa_g_per_kg);
+        println!("SA: {:.4} g/kg", out.sa);
         println!("Density: {:.3} kg/m^3", out.density_kg_per_m3);
         println!("SG 20/20: {:.5}", out.sg_20_20);
         println!("SG 25/25: {:.5}", out.sg_25_25);
