@@ -5,7 +5,6 @@ pub struct Assumptions {
     pub temp: f64,
     pub pressure_dbar: f64,
     pub alkalinity: Option<f64>,
-    pub alkality: Option<f64>,
     pub assume_borate: bool,
     pub default_f_mg_l: f64,
     pub ref_alk_dkh: Option<f64>,
@@ -22,7 +21,6 @@ impl Default for Assumptions {
             temp: 20.0,
             pressure_dbar: 0.0,
             alkalinity: Some(8.0),
-            alkality: None,
             assume_borate: true,
             default_f_mg_l: 1.296,
             ref_alk_dkh: Some(8.0),
@@ -86,11 +84,6 @@ impl Inputs {
 
 impl Assumptions {
     pub fn normalized(mut self) -> Self {
-        if self.alkalinity.is_none() {
-            if let Some(a) = self.alkality {
-                self.alkalinity = Some(a);
-            }
-        }
         if self.rn_compat {
             if self
                 .ref_alk_dkh

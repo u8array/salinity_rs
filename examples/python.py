@@ -49,7 +49,6 @@ def main():
             "temp": 20.0,
             "pressure_dbar": 0.0,
             "alkalinity": 8.0,
-            "alkality": None,
             "assume_borate": True,
             "default_f_mg_l": 1.296,
             "ref_alk_dkh": 8.0,
