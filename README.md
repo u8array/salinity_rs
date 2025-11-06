@@ -35,16 +35,10 @@ fn main() {
     br: 65.0, s: 900.0, b: 4.4,
     cl: None,    // let the model estimate Cl⁻ from electroneutrality
     f: None,     // fall back to default F⁻ if not provided
-    t_c: 20.0, p_dbar: 0.0,
     alk_dkh: Some(8.0),
-    assume_borate: true,
-    default_f_mg_l: 1.296,
-    ref_alk_dkh: Some(8.0),
-    borate_fraction: None,
-    alk_mg_per_meq: None,
-    return_components: false,
   };
 
+  // Environmental and reference assumptions live here
   let ass = Assumptions { temp: 20.0, pressure_dbar: 0.0, ..Default::default() };
   let out = compute_summary(&inputs, &ass);
   println!(
@@ -57,7 +51,7 @@ fn main() {
 Public API highlights:
 
 - High‑level: `compute_summary(inputs, assumptions)` → SP, SA, ρ, SG(20/20), SG(25/25)
-- Low‑level: `calc_salinity_sp_teos10`, `calc_salinity_sp_iterative`, `rho_from_sp`, `specific_gravity`, `sa_from_sp`
+- Low‑level: `calc_salinity_sp_teos10`, `calc_salinity_sp_iterative(&Inputs, &Assumptions, max_iter, tol)`, `rho_from_sp`, `specific_gravity`, `sa_from_sp`
 - Types: `Inputs`, `Assumptions`, `CalcResult`, `DetailedResult`, `Components`
 
 Minimum supported Rust: a recent stable with Edition 2024 support.
@@ -79,9 +73,8 @@ The binary accepts JSON inputs for measurements and assumptions:
 
 JSON fields (excerpt):
 
-- Inputs (mg/L unless noted): `na, ca, mg, k, sr, br, s, b, cl` (optional; omit or set `null` for auto‑estimate), `f` (optional)
-- Conditions: `t_c` (°C, default 20), `p_dbar` (dbar, default 0)
-- Alkalinity/options: `alk_dkh` (dKH), `assume_borate` (default true), `borate_fraction`, `ref_alk_dkh` (default 8.0), `alk_mg_per_meq`, `default_f_mg_l` (default 1.296), `return_components` (default false)
+- Inputs (mg/L unless noted): `na, ca, mg, k, sr, br, s, b, cl` (optional; omit or set `null` for auto‑estimate), `f` (optional), `alk_dkh` (dKH, optional)
+- Assumptions (conditions and options): `temp` (°C, default 20), `pressure_dbar` (dbar, default 0), `alkalinity` (dKH, optional; used if `inputs.alk_dkh` is missing), `assume_borate` (default true), `borate_fraction`, `ref_alk_dkh` (default 8.0), `alk_mg_per_meq`, `default_f_mg_l` (default 1.296), `return_components` (default false)
 
 ## Output example
 
@@ -117,8 +110,9 @@ Two invocation methods are supported:
 salinity_rs --inputs-json '{
   "na":10780, "mg":1290, "ca":420, "k":400, "sr":8,
   "br":65, "s":900, "b":4.4,
-  "t_c":20, "p_dbar":0, "alk_dkh":8,
-  "return_components":true
+  "alk_dkh":8
+}' --assumptions-json '{
+  "temp":20, "pressure_dbar":0, "return_components":true
 }'
 ```
 
@@ -131,8 +125,10 @@ salinity_rs --inputs-json '{
   "inputs": {
     "na":10780, "mg":1290, "ca":420, "k":400, "sr":8,
     "br":65, "s":900, "b":4.4,
-    "t_c":20, "p_dbar":0, "alk_dkh":8,
-    "return_components": true
+    "alk_dkh":8
+  },
+  "assumptions": {
+    "temp": 20, "pressure_dbar": 0, "return_components": true
   }
 }
 ```

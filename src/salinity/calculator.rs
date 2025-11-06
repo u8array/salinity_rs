@@ -73,7 +73,7 @@ pub struct CalculationSummary {
 /// The function builds a mass budget from the provided ion concentrations and
 /// iteratively adjusts SP (and therefore the salinity ratio) so that the
 /// measured sum of major ions matches the reference sum for the chosen
-/// reference composition. When `inp.return_components` is `false` a compact
+/// reference composition. When `ass.return_components` is `false` a compact
 /// `CalcResult::Simple(sp)` is returned; otherwise a `CalcResult::Detailed`
 /// with density and per-ion breakdowns is returned.
 ///
@@ -83,12 +83,17 @@ pub struct CalculationSummary {
 /// - `tol`: convergence tolerance applied to SP changes.
 ///
 /// Returns: `CalcResult` (either `Simple(f64)` or `Detailed(DetailedResult)`).
-pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> CalcResult {
+pub fn calc_salinity_sp_iterative(
+    inp: &Inputs,
+    ass: &Assumptions,
+    max_iter: usize,
+    tol: f64,
+) -> CalcResult {
     // Partition boron between boric acid and borate based on assumptions.
     let (n_boric, n_borate) = boron_partition(
         inp.b,
-        if inp.assume_borate {
-            inp.borate_fraction.unwrap_or(BORATE_FRACTION_DEFAULT)
+        if ass.assume_borate {
+            ass.borate_fraction.unwrap_or(BORATE_FRACTION_DEFAULT)
         } else {
             0.0
         },
@@ -97,16 +102,16 @@ pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> Ca
     // Convert alkalinity (DKH or mg per meq) into species and total alkalinity
     // in mg/L for the mass-balance. The tuple contains derived species and
     // the equivalent alkalinity in mg/L used directly below.
-    let (n_hco3, n_co3, n_oh, alk_mg_l) =
-        alk_species_from_dkh(inp.alk_dkh.unwrap_or(0.0), inp.alk_mg_per_meq);
+    let alk_dkh_eff = inp.alk_dkh.or(ass.alkalinity).unwrap_or(0.0);
+    let (n_hco3, n_co3, n_oh, alk_mg_l) = alk_species_from_dkh(alk_dkh_eff, ass.alk_mg_per_meq);
 
     // Chloride: use provided value if positive, otherwise estimate by charge
     // balance using the derived anion/cation species above.
     let cl_mg_l = inp.cl.filter(|&c| c > 0.0).unwrap_or_else(|| {
-        estimate_cl_mg_l_from_charge_balance(inp, n_borate, n_hco3, n_co3, n_oh)
+        estimate_cl_mg_l_from_charge_balance(inp, ass.default_f_mg_l, n_borate, n_hco3, n_co3, n_oh)
     });
 
-    let f_mg_l = inp.f.unwrap_or(inp.default_f_mg_l);
+    let f_mg_l = inp.f.unwrap_or(ass.default_f_mg_l);
     let g_l_na = inp.na.max(0.0) / 1000.0;
     let g_l_ca = inp.ca.max(0.0) / 1000.0;
     let g_l_mg = inp.mg.max(0.0) / 1000.0;
@@ -121,10 +126,10 @@ pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> Ca
     let g_l_cl = cl_mg_l.max(0.0) / 1000.0;
 
     let sum_ref_gkg = ref_sum_with_boron_species_and_ref_alk(
-        inp.ref_alk_dkh,
-        inp.assume_borate,
-        inp.borate_fraction,
-        inp.alk_mg_per_meq,
+        ass.ref_alk_dkh,
+        ass.assume_borate,
+        ass.borate_fraction,
+        ass.alk_mg_per_meq,
     );
 
     // Start the iteration from a nominal SP = 35 and update until convergence.
@@ -135,8 +140,8 @@ pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> Ca
     let mut sa = sp * (SR_REF / 35.0);
     for _ in 0..max_iter {
         // Compute conservative temperature and density at current SA.
-        let ct = ct_from_t(sa, inp.t_c, inp.p_dbar);
-        let rho_val = rho(sa, ct, inp.p_dbar);
+        let ct = ct_from_t(sa, ass.temp, ass.pressure_dbar);
+        let rho_val = rho(sa, ct, ass.pressure_dbar);
         let kg_per_l = rho_val / 1000.0;
 
         // Sum the provided mass contributions (g/L) and convert to g/kg by
@@ -166,14 +171,14 @@ pub fn calc_salinity_sp_iterative(inp: &Inputs, max_iter: usize, tol: f64) -> Ca
     }
 
     // If the caller did not request component output, return a compact value.
-    if !inp.return_components {
+    if !ass.return_components {
         return CalcResult::Simple(round_to(sp, 4));
     }
 
     // Recompute final density at the converged SA for output.
     let rho_final = {
-        let ct = ct_from_t(sa, inp.t_c, inp.p_dbar);
-        rho(sa, ct, inp.p_dbar)
+        let ct = ct_from_t(sa, ass.temp, ass.pressure_dbar);
+        rho(sa, ct, ass.pressure_dbar)
     };
     let kg_per_l = rho_final / 1000.0;
 
@@ -241,8 +246,8 @@ pub fn calc_salinity_sp_teos10(
     max_iter: usize,
     tol: f64,
 ) -> CalcResult {
-    let inp2 = Inputs::from_base_with_assumptions(base_inp, &ass.clone().normalized());
-    calc_salinity_sp_iterative(&inp2, max_iter, tol)
+    let ass_norm = ass.clone().normalized();
+    calc_salinity_sp_iterative(base_inp, &ass_norm, max_iter, tol)
 }
 
 /// Compute in-situ density (kg/m³) from Practical Salinity (SP).

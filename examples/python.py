@@ -16,7 +16,9 @@ def main():
 
     cmd = [
         "cargo",
-        "run", # can be replaced with the path to the compiled binary
+        "run",  
+        "--features",
+        "cli",
         "--manifest-path",
         cargo_toml,
         "--quiet",
@@ -44,6 +46,15 @@ def main():
     ]
 
     proc = subprocess.run(cmd, capture_output=True, text=True)
+    if proc.returncode != 0:
+        # Surface CLI errors to the caller and exit
+        sys.stderr.write(proc.stderr)
+        sys.exit(proc.returncode)
+
+    if not proc.stdout.strip():
+        sys.stderr.write("No JSON received on stdout from CLI.\n")
+        sys.exit(1)
+
     data = json.loads(proc.stdout)
 
     required_keys = [

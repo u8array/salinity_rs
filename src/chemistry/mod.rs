@@ -95,6 +95,7 @@ pub fn boron_partition(b_mg_l: f64, borate_fraction: f64) -> (f64, f64) {
 
 pub fn estimate_cl_mg_l_from_charge_balance(
     inp: &Inputs,
+    default_f_mg_l: f64,
     n_borate: f64,
     n_hco3: f64,
     n_co3: f64,
@@ -111,7 +112,7 @@ pub fn estimate_cl_mg_l_from_charge_balance(
     let mut neg = 2.0 * n_so4;
 
     neg += mol_per_l(inp.br / 1000.0, M_BR);
-    let f_mg_l = inp.f.unwrap_or(inp.default_f_mg_l);
+    let f_mg_l = inp.f.unwrap_or(default_f_mg_l);
     neg += mol_per_l(f_mg_l / 1000.0, M_F);
 
     neg += 1.0 * n_borate;

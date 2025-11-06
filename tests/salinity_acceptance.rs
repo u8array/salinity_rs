@@ -19,15 +19,7 @@ fn calculates_salinity_for_sample_inputs_within_reasonable_bounds() {
         f: Some(1.14),
         s: 814.0,
         b: 5.57,
-        t_c: 20.0,
-        p_dbar: 0.0,
         alk_dkh: None,
-        assume_borate: true,
-        default_f_mg_l: 1.296,
-        ref_alk_dkh: Some(8.0),
-        borate_fraction: None,
-        alk_mg_per_meq: None,
-        return_components: false,
     };
 
     let ass = Assumptions {
