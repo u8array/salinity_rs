@@ -50,8 +50,8 @@ fn main() {
 
 Public API highlights:
 
-- High‑level: `compute_summary(inputs, assumptions)` → SP, SA, ρ, SG(20/20), SG(25/25)
-- Low‑level: `calc_salinity_sp_teos10`, `calc_salinity_sp_iterative(&Inputs, &Assumptions, max_iter, tol)`, `rho_from_sp`, `specific_gravity`, `sa_from_sp`
+- Convenience API: `compute_summary(inputs, assumptions)` → SP, SA, ρ, SG(20/20), SG(25/25)
+- Solver API: `calc_salinity_sp_teos10`, `calc_salinity_sp_iterative(&Inputs, &Assumptions, max_iter, tol)`, `rho_from_sp`, `specific_gravity`, `sa_from_sp`
 - Types: `Inputs`, `Assumptions`, `CalcResult`, `DetailedResult`, `Components`
 
 Minimum supported Rust: a recent stable with Edition 2024 support.
@@ -282,7 +282,7 @@ SG(t_\mathrm{ref}/t_\mathrm{ref})=
 For comparability, normalize to `SP = 35`:
 
 ```math
-  ext{norm\_factor}=\frac{35}{SP},\qquad m^\star=m\cdot\text{norm\_factor}.
+  \text{norm\_factor}=\frac{35}{SP},\qquad m^\star=m\cdot\text{norm\_factor}.
 ```
 
 ## References
