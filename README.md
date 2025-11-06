@@ -1,5 +1,5 @@
 
-# salinity_teos_10
+# salinity_rs
 
 Rust library (with optional CLI) to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.
 
@@ -20,13 +20,13 @@ Add the crate to your project. Until published on crates.io, you can depend on t
 
 ```toml
 [dependencies]
-salinity_teos_10 = { git = "https://github.com/u8array/gsw_teos-10", package = "salinity_teos_10", default-features = false }
+salinity_rs = { git = "https://github.com/u8array/salinity_rs", default-features = false }
 ```
 
 Quick start (Rust):
 
 ```rust
-use salinity_teos_10::{compute_summary, Inputs, Assumptions};
+use salinity_rs::{compute_summary, Inputs, Assumptions};
 
 fn main() {
   // concentrations in mg/L; temperature in °C; pressure in dbar
@@ -114,7 +114,7 @@ Two invocation methods are supported:
 1. Inline JSON (on the command line)
 
 ```bash
-salinity_teos_10 --inputs-json '{
+salinity_rs --inputs-json '{
   "na":10780, "mg":1290, "ca":420, "k":400, "sr":8,
   "br":65, "s":900, "b":4.4,
   "t_c":20, "p_dbar":0, "alk_dkh":8,
@@ -140,7 +140,7 @@ salinity_teos_10 --inputs-json '{
 Run:
 
 ```bash
-salinity_teos_10 --input inputs.json
+salinity_rs --input inputs.json
 ```
 
 ## Background
@@ -324,7 +324,7 @@ cargo build --release --features cli
 Run the CLI:
 
 ```bash
-target/release/salinity_teos_10 --help
+target/release/salinity_rs --help
 ```
 
 ## License and acknowledgements

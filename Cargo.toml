@@ -1,16 +1,16 @@
 [package]
-name = "salinity_teos_10"
+name = "salinity_rs"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
 description = "TEOS-10-based salinity calculator: SP/SA, density, specific density, and ion components"
-repository = "https://github.com/u8array/salinity_cli_rs"
+repository = "http://github.com/u8array/salinity_rs"
 readme = "README.md"
 keywords = ["salinity", "teos-10", "oceanography", "chemistry"]
 categories = ["science", "command-line-utilities"]
 
 [lib]
-name = "salinity_teos_10"
+name = "salinity_rs"
 path = "src/lib.rs"
 
 [dependencies]
@@ -25,7 +25,7 @@ default = []
 cli = ["clap"]
 
 [[bin]]
-name = "salinity_teos_10"
+name = "salinity_rs"
 path = "src/main.rs"
 required-features = ["cli"]
 

@@ -1,4 +1,4 @@
-use salinity_teos_10::{
+use salinity_rs::{
     Assumptions, CalcResult, Inputs, calc_salinity_sp_teos10, rho_from_sp, specific_gravity,
 };
 

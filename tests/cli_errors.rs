@@ -2,7 +2,7 @@ use predicates::prelude::*;
 
 #[test]
 fn cli_fails_without_any_input() {
-    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_teos_10");
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
     cmd.assert()
         .failure()
         .stderr(predicate::str::contains("Missing input data"));
@@ -10,7 +10,7 @@ fn cli_fails_without_any_input() {
 
 #[test]
 fn cli_works_without_assumptions_with_inputs_json() {
-    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_teos_10");
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
     let inputs = serde_json::json!({
         "na": 11980.0,
         "ca": 357.0,
@@ -43,7 +43,7 @@ fn cli_works_without_assumptions_with_inputs_json() {
 
 #[test]
 fn cli_works_without_assumptions_in_stdin_input_document() {
-    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_teos_10");
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
 
     let doc = serde_json::json!({
         "inputs": {
@@ -79,7 +79,7 @@ fn cli_works_without_assumptions_in_stdin_input_document() {
 
 #[test]
 fn cli_reports_invalid_json_for_inputs_json() {
-    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_teos_10");
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
     cmd.arg("--inputs-json").arg("{not valid json}");
 
     cmd.assert()
@@ -98,7 +98,7 @@ fn cli_reports_invalid_json_in_file() {
     let mut f = File::create(&file_path).unwrap();
     writeln!(f, "this is not json").unwrap();
 
-    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_teos_10");
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
     cmd.arg("--input").arg(file_path);
 
     cmd.assert()
