@@ -120,9 +120,9 @@ salinity_teos_10 --input inputs.json
 - **SA**: g/kg of dissolved material. Primary TEOS-10 salinity variable.  
   For near-standard composition:
 
-  ```math
-  SA \approx SR = SP\cdot\frac{SR_{\mathrm{REF}}}{35},\qquad SR_{\mathrm{REF}}=35.16504\ \mathrm{g\ kg^{-1}}.
-  ```
+```math
+SA \approx SR = SP\cdot\frac{SR_{\mathrm{REF}}}{35},\qquad SR_{\mathrm{REF}}=35.16504\ \mathrm{g\ kg^{-1}}.
+```
 
   Composition anomalies would add $\delta SA_{\text{composition}}$. This tool assumes $\delta SA_{\text{composition}}\approx 0$.
 
@@ -179,7 +179,7 @@ If Cl⁻ is not provided, solve from
 ```
 
 Cations: $\mathrm{Na^+}, \mathrm{Mg^{2+}}, \mathrm{Ca^{2+}}, \mathrm{K^+}, \mathrm{Sr^{2+}}$.  
-Anions: $2\,\mathrm{SO_4^{2-}}, \mathrm{Br^-}, \mathrm{F^-}, \mathrm{B(OH)_4^-}, \mathrm{HCO_3^-}, \mathrm{CO_3^{2-}}, \mathrm{OH^-}$.  
+Anions: $\mathrm{SO_4^{2-}}, \mathrm{Br^-}, \mathrm{F^-}, \mathrm{B(OH)_4^-}, \mathrm{HCO_3^-}, \mathrm{CO_3^{2-}}, \mathrm{OH^-}$.  
 Assign the residual negative charge to $\mathrm{Cl^-}$ and clamp at zero if needed.
 
 ### Reference mass per kg
