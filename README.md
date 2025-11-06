@@ -1,8 +1,9 @@
 
-# salinity_cli_rs
+# salinity_teos_10
 
-Command-line tool to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.  
-Calculations follow TEOS-10 conventions and couple charge/mass balances with density via a simple fixed-point iteration. The library contains hooks for component tables; the current CLI outputs a concise summary (SP, SA, ρ, SG).
+Rust library (with optional CLI) to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.
+
+Calculations follow TEOS‑10 conventions and couple charge/mass balances with density via a simple fixed‑point iteration. The library exposes both high‑level helpers and low‑level building blocks; the CLI prints a concise summary (SP, SA, ρ, SG).
 
 ## Features
 
@@ -13,20 +14,74 @@ Calculations follow TEOS-10 conventions and couple charge/mass balances with den
 - Configurable assumptions: temperature `T`, pressure `p`, alkalinity, borate fraction
 - Library support for component tables (mg/L, mg/kg, SP=35 normalization). Note: current CLI prints summary only.
 
-## CLI usage
+## Install and use as a library
+
+Add the crate to your project. Until published on crates.io, you can depend on the Git repository. Disable default features to avoid pulling the optional CLI dependency:
+
+```toml
+[dependencies]
+salinity_teos_10 = { git = "https://github.com/u8array/gsw_teos-10", package = "salinity_teos_10", default-features = false }
+```
+
+Quick start (Rust):
+
+```rust
+use salinity_teos_10::{compute_summary, Inputs, Assumptions};
+
+fn main() {
+  // concentrations in mg/L; temperature in °C; pressure in dbar
+  let inputs = Inputs {
+    na: 10780.0, ca: 420.0, mg: 1290.0, k: 400.0, sr: 8.0,
+    br: 65.0, s: 900.0, b: 4.4,
+    cl: None,    // let the model estimate Cl⁻ from electroneutrality
+    f: None,     // fall back to default F⁻ if not provided
+    t_c: 20.0, p_dbar: 0.0,
+    alk_dkh: Some(8.0),
+    assume_borate: true,
+    default_f_mg_l: 1.296,
+    ref_alk_dkh: Some(8.0),
+    borate_fraction: None,
+    alk_mg_per_meq: None,
+    return_components: false,
+  };
+
+  let ass = Assumptions { temp: 20.0, pressure_dbar: 0.0, ..Default::default() };
+  let out = compute_summary(&inputs, &ass);
+  println!(
+    "SP={:.4} SA={:.4} g/kg  ρ={:.3} kg/m³  SG20/20={:.5} SG25/25={:.5}",
+    out.sp, out.sa, out.density_kg_per_m3, out.sg_20_20, out.sg_25_25
+  );
+}
+```
+
+Public API highlights:
+
+- High‑level: `compute_summary(inputs, assumptions)` → SP, SA, ρ, SG(20/20), SG(25/25)
+- Low‑level: `calc_salinity_sp_teos10`, `calc_salinity_sp_iterative`, `rho_from_sp`, `specific_gravity`, `sa_from_sp`
+- Types: `Inputs`, `Assumptions`, `CalcResult`, `DetailedResult`, `Components`
+
+Minimum supported Rust: a recent stable with Edition 2024 support.
+
+## CLI usage (optional feature)
+
+The CLI is behind the `cli` feature. Build and run locally:
+
+```bash
+cargo run --features cli -- --help
+```
 
 The binary accepts JSON inputs for measurements and assumptions:
 
-- `--inputs-json <JSON>`: Inline JSON for input values (schema like `Inputs`).
-- `--assumptions-json <JSON>`: Optional, adds/overrides assumptions (schema like `Assumptions`).
+- `--inputs-json <JSON>`: Inline JSON for input values (shape of `Inputs`).
+- `--assumptions-json <JSON>`: Optional, adds/overrides assumptions (shape of `Assumptions`).
 - `--input <FILE>`: Read a file containing an object with `inputs` and optional `assumptions`. Use `-` for stdin.
-- `--json`: Output in JSON format (otherwise human-readable lines for SP/SA/Density/SG).
+- `--json`: Output machine‑readable JSON.
 
 JSON fields (excerpt):
 
-- Inputs (mg/L unless noted): `na, ca, mg, k, sr, br, s, b, cl` (optional; omit or set `null` for auto-estimate), `f` (optional)
+- Inputs (mg/L unless noted): `na, ca, mg, k, sr, br, s, b, cl` (optional; omit or set `null` for auto‑estimate), `f` (optional)
 - Conditions: `t_c` (°C, default 20), `p_dbar` (dbar, default 0)
-- Alkalinity/options: `alk_dkh` (dKH), `assume_borate` (default true), `borate_fraction`, `ref_alk_dkh` (default 8.0), `alk_mg_per_meq`, `default_f_mg_l` (default 1.296), `return_components` (default false; currently ignored by CLI output)
+- Alkalinity/options: `alk_dkh` (dKH), `assume_borate` (default true), `borate_fraction`, `ref_alk_dkh` (default 8.0), `alk_mg_per_meq`, `default_f_mg_l` (default 1.296), `return_components` (default false)
 
 ## Output example
 
@@ -46,33 +101,9 @@ SG 25/25: 1.02480
 - Optional default F⁻ used if missing.
 - Iteration enforces consistency between volume-based inputs and mass-based reference.
 
-## Install (prebuilt binaries)
+## Feature flags
 
-Prebuilt binaries for macOS, Linux and Windows are available on the
-[Releases](https://github.com/u8array/salinity_cli_rs/releases) page.
-
-### Platform notes
-
-macOS: download the macOS binary for your architecture (Apple Silicon/Intel),
-make it executable and put it on your PATH.
-
-```bash
-chmod +x ./salinity_teos_10
-./salinity_teos_10 --help
-```
-
-Linux: download the Linux binary, make it executable and put it on your PATH.
-
-```bash
-chmod +x ./salinity_teos_10
-./salinity_teos_10 --help
-```
-
-Windows: download `salinity_teos_10.exe` and run it from PowerShell or CMD.
-
-```powershell
-.\salinity_teos_10.exe --help
-```
+- `cli` — enables the command‑line interface and pulls in the optional `clap` dependency. Not needed for library use.
 
 ## Quick start
 
@@ -216,7 +247,7 @@ SA_{\text{new}}\approx SR_{\text{new}}.
 Because $ρ$ depends on $SA$ and $CT$, and $SA$ depends on $SP$, iterate to a fixed point:
 
 1. Initialize $SP=35$, $SA = SP\cdot SR_{\mathrm{REF}}/35$.
-2. Compute $CT=\mathrm{CT}(SA,T,p)$, $ρ=\mathrm{ρ}(SA,CT,p)$ via TEOS-10. In the current implementation, $CT$ is approximated by in-situ $t$ (CT ≈ t), which is adequate near 0 dbar.
+2. Compute $CT=\mathrm{CT}(SA,T,p)$ and $ρ=\mathrm{ρ}(SA,CT,p)$ via TEOS‑10.
 3. Convert all component g/L to g/kg using $ρ$ and sum to $\Sigma_{\mathrm{g/kg}}$.
 4. Update $SR$, $SP$, $SA$.
 5. Stop when $|SP_{\text{new}}-SP|<\varepsilon$.
@@ -276,10 +307,28 @@ Notes:
 
 ## Build from source
 
-Requires the latest stable Rust toolchain.
+Requires a recent stable Rust toolchain.
 
-Build locally:
+- Library only:
 
 ```bash
 cargo build --release
 ```
+
+- CLI:
+
+```bash
+cargo build --release --features cli
+```
+
+Run the CLI:
+
+```bash
+target/release/salinity_teos_10 --help
+```
+
+## License and acknowledgements
+
+MIT license. See `LICENSE`.
+
+This project builds on TEOS‑10 relations via the excellent `gsw` crate.

@@ -9,5 +9,5 @@ pub use crate::error::AppError;
 pub use crate::models::{Assumptions, Inputs};
 pub use crate::salinity::calculator::{
     CalcResult, Components, DetailedResult, calc_salinity_sp_iterative, calc_salinity_sp_teos10,
-    rho_from_sp, specific_gravity,
+    compute_summary, rho_from_sp, specific_gravity,
 };

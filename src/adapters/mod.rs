@@ -1,10 +1,12 @@
+#[cfg(feature = "cli")]
 pub mod cli;
 pub mod teos10;
 
-use crate::error::AppError;
+#[cfg(feature = "cli")]
 use clap::Parser;
 
-pub fn run() -> Result<(), AppError> {
+#[cfg(feature = "cli")]
+pub fn run() -> Result<(), crate::error::AppError> {
     use crate::adapters::cli::{Args, parse_inputs};
     use crate::salinity::calculator::compute_summary;
 

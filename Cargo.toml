@@ -3,13 +3,31 @@ name = "salinity_teos_10"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+description = "TEOS-10-based salinity calculator: SP/SA, density, specific density, and ion components"
+repository = "https://github.com/u8array/salinity_cli_rs"
+readme = "README.md"
+keywords = ["salinity", "teos-10", "oceanography", "chemistry"]
+categories = ["science", "command-line-utilities"]
+
+[lib]
+name = "salinity_teos_10"
+path = "src/lib.rs"
 
 [dependencies]
 gsw = "0.2.3"
-clap = { version = "4.4", features = ["derive"] }
+clap = { version = "4.4", features = ["derive"], optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 thiserror = "2.0"
+
+[features]
+default = []
+cli = ["clap"]
+
+[[bin]]
+name = "salinity_teos_10"
+path = "src/main.rs"
+required-features = ["cli"]
 
 [dev-dependencies]
 assert_cmd = "2.0"
