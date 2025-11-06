@@ -4,8 +4,6 @@
 Command-line tool to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.  
 Calculations follow TEOS-10 conventions and couple charge/mass balances with density via a simple fixed-point iteration. The library contains hooks for component tables; the current CLI outputs a concise summary (SP, SA, ρ, SG).
 
-Note: The binary name is `salinity_teos_10`.
-
 ## Features
 
 - Compute `SP` and `SA` from elemental/ionic analyses
