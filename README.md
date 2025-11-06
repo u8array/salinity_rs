@@ -74,17 +74,6 @@ Prebuilt binaries for macOS, Linux and Windows are available on the
   .\salinity_teos_10.exe --help
   ```
 
-Optional but recommended:
-
-- Verify checksums/signatures if provided on the release.
-- On macOS, if Gatekeeper blocks execution, you can right‑click → Open once
-  or allow the binary in System Settings. Alternatively, remove the quarantine
-  attribute:
-  
-  ```bash
-  xattr -d com.apple.quarantine ./salinity_teos_10
-  ```
-
 ## Quick start
 
 Example with concentrations in mg/L, `t = 20 °C`, `p = 0 dbar`, and total alkalinity `8 dKH`.
