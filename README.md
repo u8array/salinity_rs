@@ -285,10 +285,6 @@ For comparability, normalize to `SP = 35`:
   ext{norm\_factor}=\frac{35}{SP},\qquad m^\star=m\cdot\text{norm\_factor}.
 ```
 
-## Validation
-
-Compare `SP` against conductivity-derived `SP` and ensure TEOS-10 `ρ(SA,CT,p)` matches expected densities at 20 °C or 25 °C for typical reef mixes.
-
 ## References
 
 - McDougall, T. J., and P. M. Barker (2011): Getting Started with TEOS‑10 and the Gibbs Seawater (GSW) Oceanographic Toolbox. TEOS‑10 Publication. [https://www.teos-10.org/pubs/Getting_Started.pdf](https://www.teos-10.org/pubs/Getting_Started.pdf)
