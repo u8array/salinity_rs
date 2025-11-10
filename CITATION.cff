@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "salinity_rs: TEOS-10 based salinity and density from chemical analyses"
+version: "0.1.0"
+license: MIT
+authors:
+  - name: "u8array"
+repository-code: "https://github.com/u8array/salinity_rs"
+references:
+  - type: software
+    title: "Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust (gsw crate)"
+    authors:
+      - name: "Guilherme P. Castelao"
+      - name: "Luiz Irber"
+    year: 2024
+    doi: "10.21105/joss.05988"
+    url: "https://doi.org/10.21105/joss.05988"
+  - type: article
+    title: "The International Thermodynamic Equation of Seawater – 2010 (TEOS-10) Manual"
+    authors:
+      - name: "IOC, SCOR and IAPSO"
+    year: 2010
+    url: "https://www.teos-10.org/pubs/TEOS-10_Manual.pdf"
+  - type: article
+    title: "Getting Started with TEOS-10 and the Gibbs Seawater (GSW) Oceanographic Toolbox"
+    authors:
+      - name: "T. J. McDougall"
+      - name: "P. M. Barker"
+    year: 2011
+    url: "https://www.teos-10.org/pubs/Getting_Started.pdf"
+  - type: article
+    title: "The composition of Standard Seawater and the definition of the Reference-Composition Salinity Scale"
+    authors:
+      - name: "F. J. Millero"
+      - name: "R. Feistel"
+      - name: "D. G. Wright"
+      - name: "T. J. McDougall"
+    year: 2008
+    doi: "10.1016/j.dsr.2008.03.004"
+    url: "https://doi.org/10.1016/j.dsr.2008.03.004"

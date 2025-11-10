@@ -288,6 +288,7 @@ For comparability, normalize to `SP = 35`:
 
 ## References
 
+- Castelao, G. P., and L. Irber (2024): Gibbs Sea Water Oceanographic Toolbox of TEOS‑10 implemented in Rust. Journal of Open Source Software, 9(93), 5988. [https://doi.org/10.21105/joss.05988](https://doi.org/10.21105/joss.05988)
 - McDougall, T. J., and P. M. Barker (2011): Getting Started with TEOS‑10 and the Gibbs Seawater (GSW) Oceanographic Toolbox. TEOS‑10 Publication. [https://www.teos-10.org/pubs/Getting_Started.pdf](https://www.teos-10.org/pubs/Getting_Started.pdf)
 - IOC, SCOR and IAPSO (2010): The International Thermodynamic Equation of Seawater – 2010 (TEOS‑10) Manual. TEOS‑10 Publication. [https://www.teos-10.org/pubs/TEOS-10_Manual.pdf](https://www.teos-10.org/pubs/TEOS-10_Manual.pdf)
 - Millero, F. J., R. Feistel, D. G. Wright, and T. J. McDougall (2008): The composition of Standard Seawater and the definition of the Reference‑Composition Salinity Scale. Deep‑Sea Research Part I, 55, 50–72. [https://doi.org/10.1016/j.dsr.2008.03.004](https://doi.org/10.1016/j.dsr.2008.03.004)
