@@ -108,10 +108,10 @@ pub fn calc_salinity_sp_iterative(
     let alk_dkh_eff = inp.alk_dkh.or(ass.alkalinity).unwrap_or(0.0);
     let (n_hco3, n_co3, n_oh, alk_mg_l) = alk_species_from_dkh(alk_dkh_eff, ass.alk_mg_per_meq);
 
-    // Chloride: use provided value if positive, otherwise estimate by charge
-    // balance using the derived anion/cation species above.
+    // Chloride: use provided value if positive, otherwise estimate using a
+    // blended strategy (charge balance + ratio constraints) for robustness.
     let cl_mg_l = inp.cl.filter(|&c| c > 0.0).unwrap_or_else(|| {
-        estimate_cl_mg_l_from_charge_balance(inp, ass.default_f_mg_l, n_borate, n_hco3, n_co3, n_oh)
+        estimate_cl_mg_l(inp, ass.default_f_mg_l, n_borate, n_hco3, n_co3, n_oh)
     });
 
     let f_mg_l = inp.f.unwrap_or(ass.default_f_mg_l);
