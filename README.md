@@ -10,7 +10,7 @@ Calculations follow TEOS‑10 conventions and couple charge/mass balances with d
 - Compute `SP` and `SA` from elemental/ionic analyses
 - TEOS-10 density `ρ(SA,CT,p)` and specific gravity at a reference temperature
 - Self-consistent conversion between mg/L and mg/kg via `ρ`
-- Chloride estimation from electroneutrality if not measured
+- Chloride estimation from electroneutrality with adaptive reference‑ion ratio blending when Cl⁻ is missing
 - Configurable assumptions: temperature `T`, pressure `p`, alkalinity, borate fraction
 - Library support for component tables (mg/L, mg/kg, SP=35 normalization). Note: current CLI prints summary only.
 
@@ -210,6 +210,59 @@ If Cl⁻ is not provided, solve from
 Cations: $\mathrm{Na^+}, \mathrm{Mg^{2+}}, \mathrm{Ca^{2+}}, \mathrm{K^+}, \mathrm{Sr^{2+}}$.  
 Anions: $\mathrm{SO_4^{2-}}, \mathrm{Br^-}, \mathrm{F^-}, \mathrm{B(OH)_4^-}, \mathrm{HCO_3^-}, \mathrm{CO_3^{2-}}, \mathrm{OH^-}$.  
 Assign the residual negative charge to $\mathrm{Cl^-}$ and clamp at zero if needed.
+
+#### Adaptive chloride estimation (charge balance + ratio blending)
+
+When $\mathrm{Cl^-}$ is not measured, the library complements the charge-balance estimate with a ratio-based estimate derived from the reference composition. Let the reference molar ratios be
+
+```math
+r_i = \frac{\mathrm{REF\_MMOL}_i}{\mathrm{REF\_MMOL}_{\mathrm{Cl}}}.
+```
+
+From measured mass concentrations $c_i$ (mg/L) and molar masses $M_i$ (g/mol), obtain $n_i$ (mol/L) via
+
+```math
+n_i = \frac{\max(c_i,0)}{1000\,M_i}.
+```
+
+For each species with a sufficiently stable ratio in near‑NSW (Na⁺, Mg²⁺, Ca²⁺, K⁺, Sr²⁺, Br⁻, and SO₄²⁻), form a candidate
+
+```math
+n_{\mathrm{Cl},i} = \frac{n_i}{r_i}.
+```
+
+Use reference mmol/kg as weights $w_i$ (Na strongest influence) to compute a weighted mean
+
+```math
+n_{\mathrm{Cl,ratio}} = \frac{\sum_i w_i\,n_{\mathrm{Cl},i}}{\sum_i w_i},\qquad w_i=\mathrm{REF\_MMOL}_i.
+```
+
+Derive $n_{\mathrm{SO_4}}$ from sulfur reported as elemental S using the molar mass ratio, i.e., $c_{\mathrm{SO_4}} = c_S\,M_{\mathrm{SO_4}}/M_S$ prior to conversion to moles. Fluoride is handled in charge balance (with a configurable default if missing) but is not used in the ratio estimate.
+
+Finally, blend the charge‑balance and ratio estimates adaptively:
+
+```math
+n_{\mathrm{Cl,blend}} =
+\begin{cases}
+ n_{\mathrm{Cl,ratio}}, & n_{\mathrm{Cl,charge}} < 0.8\,n_{\mathrm{Cl,ratio}}\\
+ 0.6\,n_{\mathrm{Cl,charge}} + 0.4\,n_{\mathrm{Cl,ratio}}, & \text{otherwise.}
+\end{cases}
+```
+
+Report chloride as
+
+```math
+\mathrm{Cl\ mg/L} = \max\big(n_{\mathrm{Cl,blend}}\,M_{\mathrm{Cl}}\cdot 1000,\ 0\big).
+```
+
+Rationale: charge balance alone can underestimate when inputs miss anions or contain measurement noise; the ratio pathway leverages the stability of major-ion ratios in standard seawater. The adaptive rule prefers the ratio estimate when the two disagree strongly and otherwise uses a conservative blend.
+
+Limitations:
+
+- Assumes composition near standard seawater; large deviations (e.g. hypersaline brines, engineered systems) can bias ratio-derived $n_{\mathrm{Cl}}$.
+- Sensitive to analytical errors in high-weight ions (especially Na⁺); propagate uncertainties if available.
+- Fixed weights ignore minor temperature/salinity dependence of ionic ratios.
+- Fluoride default introduces small uncertainty but typically negligible for overall charge.
 
 ### Reference mass per kg
 
