@@ -3,6 +3,9 @@ use crate::chemistry::*;
 use crate::models::{Assumptions, Inputs};
 use serde::Serialize;
 
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
+
 /// Result of a salinity calculation.
 ///
 /// This enum expresses the two possible return shapes from the calculation
