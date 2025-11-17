@@ -1,6 +1,12 @@
 
 # salinity_rs
 
+![Build Status](https://github.com/u8array/salinity_rs/actions/workflows/rust.yml/badge.svg)
+[![no_std supported](https://img.shields.io/badge/no__std-supported-blue.svg)](Cargo.toml)
+<!-- [![crates.io](https://img.shields.io/crates/v/salinity_rs.svg)](https://crates.io/crates/salinity_rs)
+[![docs.rs](https://docs.rs/salinity_rs/badge.svg)](https://docs.rs/salinity_rs) -->
+[![license](https://img.shields.io/github/license/u8array/salinity_rs.svg)](LICENSE)
+
 Rust library (with optional CLI) to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.
 
 Calculations follow TEOS‑10 conventions and couple charge/mass balances with density via a simple fixed‑point iteration. The library exposes both high‑level helpers and low‑level building blocks; the CLI prints a concise summary (SP, SA, ρ, SG).
