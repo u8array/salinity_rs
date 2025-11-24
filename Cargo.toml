@@ -15,7 +15,7 @@ path = "src/lib.rs"
 
 [dependencies]
 gsw = "0.2.3"
-clap = { version = "4.4", features = ["derive"], optional = true }
+clap = { version = "4.5", features = ["derive"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 serde_json = { version = "1.0", optional = true }
 thiserror = { version = "2.0", optional = true }
