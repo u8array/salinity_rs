@@ -9,6 +9,9 @@
 
 Rust library (with optional CLI) to estimate **Practical Salinity** `SP`, **Absolute Salinity** `SA`, **density** `ρ`, and specific gravities from macro chemical analyses of seawater or reef aquaria.
 
+> [!NOTE]
+> Validation is in progress.
+
 Calculations follow TEOS‑10 conventions and couple charge/mass balances with density via a simple fixed‑point iteration. The library exposes both high‑level helpers and low‑level building blocks; the CLI prints a concise summary (SP, SA, ρ, SG).
 
 ## Features
