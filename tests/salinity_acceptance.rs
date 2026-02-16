@@ -71,3 +71,42 @@ fn calculates_salinity_for_sample_inputs_within_reasonable_bounds() {
     let sg_20 = specific_gravity(sp, 20.0, 0.0);
     approx_in_range(sg_20, 0.98, 1.10);
 }
+
+#[test]
+fn salinity_norm_changes_component_normalization_factor() {
+    let inputs = Inputs {
+        na: 11_980.0,
+        ca: 357.0,
+        mg: 1_246.0,
+        k: 464.0,
+        sr: 6.96,
+        br: 73.2,
+        cl: Some(19_570.0),
+        f: Some(1.14),
+        s: 814.0,
+        b: 5.57,
+        alk_dkh: None,
+    };
+
+    let ass35 = Assumptions {
+        return_components: true,
+        salinity_norm: 35.0,
+        ..Default::default()
+    };
+    let ass50 = Assumptions {
+        return_components: true,
+        salinity_norm: 50.0,
+        ..Default::default()
+    };
+
+    let factor35 = match calc_salinity_sp_teos10(&inputs, &ass35, 30, 1e-8) {
+        CalcResult::Detailed(d) => d.components.norm_factor,
+        CalcResult::Simple(_) => panic!("expected detailed output"),
+    };
+    let factor50 = match calc_salinity_sp_teos10(&inputs, &ass50, 30, 1e-8) {
+        CalcResult::Detailed(d) => d.components.norm_factor,
+        CalcResult::Simple(_) => panic!("expected detailed output"),
+    };
+
+    assert!((factor50 / factor35 - (50.0 / 35.0)).abs() < 1e-12);
+}
