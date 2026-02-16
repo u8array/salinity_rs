@@ -91,3 +91,38 @@ fn cli_reports_invalid_json_in_file() {
         .failure()
         .stderr(predicate::str::contains("Invalid JSON in input document"));
 }
+
+#[test]
+fn cli_fails_when_computation_produces_non_finite_values() {
+    let mut cmd = assert_cmd::cargo::cargo_bin_cmd!("salinity_rs");
+    let inputs = serde_json::json!({
+        "na": 11980.0,
+        "ca": 357.0,
+        "mg": 1246.0,
+        "k": 464.0,
+        "sr": 6.96,
+        "br": 73.2,
+        "cl": 19570.0,
+        "f": 1.14,
+        "s": 814.0,
+        "b": 5.57,
+        "alk_dkh": null
+    })
+    .to_string();
+
+    let assumptions = serde_json::json!({
+        "temp": 1e9,
+        "pressure_dbar": 0.0
+    })
+    .to_string();
+
+    cmd.arg("--json")
+        .arg("--inputs-json")
+        .arg(inputs)
+        .arg("--assumptions-json")
+        .arg(assumptions);
+
+    cmd.assert()
+        .failure()
+        .stderr(predicate::str::contains("non-finite"));
+}

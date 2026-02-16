@@ -84,6 +84,8 @@ struct CmdInput {
 }
 
 pub fn print_output(out: &CalculationOutput, args: &Args) -> Result<(), AppError> {
+    validate_finite_output(out)?;
+
     if args.json {
         let s = serde_json::to_string_pretty(&out)
             .map_err(|source| AppError::SerializeOutput { source })?;
@@ -97,4 +99,19 @@ pub fn print_output(out: &CalculationOutput, args: &Args) -> Result<(), AppError
     }
 
     Ok(())
+}
+
+fn validate_finite_output(out: &CalculationOutput) -> Result<(), AppError> {
+    let values = [
+        out.sp,
+        out.sa,
+        out.density_kg_per_m3,
+        out.sg_20_20,
+        out.sg_25_25,
+    ];
+    if values.into_iter().all(f64::is_finite) {
+        Ok(())
+    } else {
+        Err(AppError::NonFiniteOutput)
+    }
 }
