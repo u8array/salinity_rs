@@ -30,8 +30,8 @@ pub enum CalcResult {
 /// units are indicated by the field name:
 /// - `mg_l`: milligrams per litre (mg/L) at the sample density
 /// - `mgkg`: milligrams per kilogram (mg/kg) at the sample density
-    /// - `mg_l_sp35`: mg/L normalized to configured salinity target (default 35)
-    /// - `mgkg_sp35`: mg/kg normalized to configured salinity target (default 35)
+/// - `mg_l_sp35`: mg/L normalized to configured salinity target (default 35)
+/// - `mgkg_sp35`: mg/kg normalized to configured salinity target (default 35)
 ///
 /// `norm_factor` is the multiplicative factor used to normalize component
 /// values to SP = 35.
