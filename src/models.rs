@@ -51,6 +51,10 @@ pub struct Inputs {
 
 impl Assumptions {
     pub fn normalized(mut self) -> Self {
+        if !self.salinity_norm.is_finite() || self.salinity_norm <= 0.0 {
+            self.salinity_norm = 35.0;
+        }
+
         if self.rn_compat
             && self
                 .ref_alk_dkh

@@ -30,8 +30,8 @@ pub enum CalcResult {
 /// units are indicated by the field name:
 /// - `mg_l`: milligrams per litre (mg/L) at the sample density
 /// - `mgkg`: milligrams per kilogram (mg/kg) at the sample density
-/// - `mg_l_sp35`: mg/L normalized to SP = 35
-/// - `mgkg_sp35`: mg/kg normalized to SP = 35
+/// - `mg_l_sp35`: mg/L normalized to configured salinity target (default 35)
+/// - `mgkg_sp35`: mg/kg normalized to configured salinity target (default 35)
 ///
 /// `norm_factor` is the multiplicative factor used to normalize component
 /// values to SP = 35.
@@ -207,7 +207,7 @@ pub fn calc_salinity_sp_iterative(
         .map(|(k, v)| (*k, *v / kg_per_l))
         .collect();
 
-    let norm_factor = 35.0 / sp.max(TINY);
+    let norm_factor = ass.salinity_norm / sp.max(TINY);
     let mg_l_norm: Vec<(&str, f64)> = mg_l_table
         .iter()
         .map(|(k, v)| (*k, *v * norm_factor))

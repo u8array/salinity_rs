@@ -48,6 +48,10 @@ pub enum AppError {
         source: serde_json::Error,
     },
 
+    #[cfg(feature = "cli")]
+    #[error("Computation produced non-finite values; please verify inputs and assumptions")]
+    NonFiniteOutput,
+
     #[error("Unexpected error: {0}")]
     Other(String),
 
